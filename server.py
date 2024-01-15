@@ -1,25 +1,44 @@
+from typing import Optional
 import pyodbc
+import flask
 
-SERVER = "tcp:renteck-server.database.windows.net"
-DATABASE = "renteckDB"
-USERNAME = "renteck"
-PASSWORD = "SA_Server"
 
-conn_string = f"DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}"
-conn = pyodbc.connect(conn_string)
-if conn:
-    print("connexion success")
-else:
-    print("Could not connect")
+class Database:
+    SERVER = "tcp:renteck-server.database.windows.net"
+    DATABASE = "renteckDB"
+    USERNAME = "renteck"
+    PASSWORD = "SA_Server"
 
-cursor = conn.cursor()
-QUERY = """INSERT INTO rental_management(rental_number, pc_number, id, startdata, enddata, received, returned) VALUES (1, 1, 'laptop', '20200606 10:10:20 AM', '20210606 10:20:30',0,0)"""
-cursor.execute(QUERY)
-QUERY = """SELECT pc_number, id FROM rental_management"""
+    def __init__(self) -> None:
+        self.conn: Optional[pyodbc.Connection] = None
+        self.cursor: Optional[pyodbc.Cursor] = None
 
-cursor.execute(QUERY)
+    def get_conn_str(self):
+        return f"DRI:VER={{ODBC Driver 18 for SQL Server}};SERVER={self.SERVER};DATABASE={self.DATABASE};UID={self.USERNAME};PWD={self.PASSWORD}"
 
-re = cursor.fetchall()
+    def establish_conn(self):
+        self.conn = pyodbc.connect(self.get_conn_str())
+        self.cursor = self.conn.cursor()
 
-for r in re:
-    print(r)
+    def exec_query(self, sql: str):
+        if self.cursor:
+            self.cursor.execute(sql)
+
+
+app = flask.Flask(__name__)
+db = Database()
+
+
+@app.route("/list")
+def get_list():
+    sql = """SELECT FROM rental_management"""
+
+
+@app.route("/available")
+def get_available():
+    ...
+
+
+@app.route("/number")
+def get_number():
+    ...
