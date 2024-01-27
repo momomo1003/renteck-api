@@ -280,7 +280,7 @@ def get_rental_status(uid, returned):
 
 @app.route("/list")
 def get_list_of_products():
-    sql = """SELECT user_id FROM rental_management"""
+    sql = """SELECT * FROM rental_management"""
     db.execute_sql_query(sql)
     entries = populate_entries()
 
@@ -289,7 +289,7 @@ def get_list_of_products():
 
 @app.route("/available")
 def get_available():
-    sql = """SELECT user_id FROM rental_management WHERE returned = 0  """
+    sql = """SELECT pc_information.model, pc_information.manufacturer FROM Inventory_control JOIN pc_information ON Inventory_control.pc_number = pc_information.pc_number WHERE Inventory_control.Inventory_control <> 0;"""
     db.execute_sql_query(sql)
     entries = populate_entries()
 
@@ -298,7 +298,7 @@ def get_available():
 
 @app.route("/number")
 def get_number():
-    sql = """SELECT COUNT(id) FROM rental_management WHERE returned = 0  """
+    sql = """SELECT pc_information.model, pc_information.manufacturer, Inventory_control.Inventory_control FROM Inventory_control JOIN pc_information ON Inventory_control.pc_number = pc_information.pc_number WHERE Inventory_control.Inventory_control <> 0;"""
     db.execute_sql_query(sql)
     entries = populate_entries()
 
